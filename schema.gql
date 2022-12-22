@@ -1,0 +1,12 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type GenreEntity {
+  genreName: String!
+  id: ID!
+}
+
+type Query {
+  getAllGenres: [GenreEntity!]!
+}
