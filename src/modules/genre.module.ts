@@ -7,6 +7,6 @@ import { GenreResolver } from '../resolvers/genre.resolver';
 @Module({
   imports: [TypeOrmModule.forFeature([GenreEntity])],
   providers: [GenreService, GenreResolver],
-  exports: [],
+  exports: [TypeOrmModule],
 })
 export class GenreModule {}

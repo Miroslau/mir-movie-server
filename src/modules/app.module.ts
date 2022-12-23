@@ -3,10 +3,11 @@ import { AppController } from '../controllers/app.controller';
 import { AppService } from '../services/app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostgresDBConfigService } from '../config/postgres.config.service';
+import { Connection } from '../config/postgres.config.service';
 import { GenreModule } from './genre.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { DirectorModule } from './director.module';
 
 @Module({
   imports: [
@@ -20,11 +21,15 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       sortSchema: true,
       playground: true,
     }),
-    TypeOrmModule.forRootAsync({
-      useClass: PostgresDBConfigService,
-      inject: [PostgresDBConfigService],
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    TypeOrmModule.forRoot({
+      autoLoadEntities: true,
+      synchronize: false,
+      ...Connection,
     }),
     GenreModule,
+    DirectorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
