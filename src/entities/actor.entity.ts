@@ -1,18 +1,19 @@
-import { UserInterface } from '../interfaces/user.interface';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { UserInterface } from '../interfaces/user.interface';
 import { MovieEntity } from './movie.entity';
 
 @ObjectType()
-@Entity({ name: 'directors' })
-export class DirectorEntity implements UserInterface {
+@Entity({ name: 'actors' })
+export class ActorEntity implements UserInterface {
   @Field(() => ID)
   @PrimaryGeneratedColumn({ name: 'ID' })
   id: number;
@@ -33,9 +34,12 @@ export class DirectorEntity implements UserInterface {
   @Column({ name: 'NATIONALITY' })
   Nationality: string;
 
-  @Field(() => MovieEntity, { nullable: true })
-  @ManyToOne(() => MovieEntity, (movie) => movie.directors)
-  movie: MovieEntity;
+  @Field(() => [MovieEntity], { nullable: true })
+  @ManyToMany(() => MovieEntity, (movie) => movie.actors, {
+    cascade: true,
+  })
+  @JoinTable()
+  movies: MovieEntity[];
 
   @Field()
   @CreateDateColumn()

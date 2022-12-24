@@ -8,6 +8,8 @@ import { GenreModule } from './genre.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { DirectorModule } from './director.module';
+import { MovieModule } from './movie.module';
+import { ActorModule } from './actor.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { DirectorModule } from './director.module';
     }),
     GenreModule,
     DirectorModule,
+    MovieModule,
+    ActorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
