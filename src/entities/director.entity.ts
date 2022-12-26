@@ -3,6 +3,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -33,9 +35,12 @@ export class DirectorEntity implements UserInterface {
   @Column({ name: 'NATIONALITY' })
   Nationality: string;
 
-  @Field(() => MovieEntity, { nullable: true })
-  @ManyToOne(() => MovieEntity, (movie) => movie.directors)
-  movie: MovieEntity;
+  @Field(() => [MovieEntity], { nullable: true })
+  @ManyToMany(() => MovieEntity, (movie) => movie.directors, {
+    cascade: true,
+  })
+  @JoinTable()
+  movies: MovieEntity[];
 
   @Field()
   @CreateDateColumn()

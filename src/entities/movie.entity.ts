@@ -40,7 +40,7 @@ export class MovieEntity {
   movieLength: number;
 
   @Field(() => [DirectorEntity], { nullable: true })
-  @OneToMany(() => DirectorEntity, (director) => director.movie)
+  @ManyToMany(() => DirectorEntity, (director) => director.movies)
   directors: DirectorEntity[];
 
   @Field(() => [GenreEntity], { nullable: true })
