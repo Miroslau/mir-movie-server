@@ -1,0 +1,81 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type ActorEntity {
+  Birth: DateTime!
+  Nationality: String!
+  UpdateAt: DateTime!
+  createdAt: DateTime!
+  firstName: String!
+  id: ID!
+  movies: [MovieEntity!]
+  secondName: String!
+}
+
+input CreateDirectorInput {
+  Birth: DateTime!
+  Nationality: String!
+  firstName: String!
+  secondName: String!
+}
+
+input CreateGenreInput {
+  genreName: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type DirectorEntity {
+  Birth: DateTime!
+  Nationality: String!
+  UpdateAt: DateTime!
+  createdAt: DateTime!
+  firstName: String!
+  id: ID!
+  movies: [MovieEntity!]
+  secondName: String!
+}
+
+type GenreEntity {
+  UpdateAt: DateTime!
+  createdAt: DateTime!
+  genreName: String!
+  id: ID!
+  movies: [MovieEntity!]
+}
+
+type MovieEntity {
+  UpdateAt: DateTime!
+  actors: [ActorEntity!]
+  createdAt: DateTime!
+  directors: [DirectorEntity!]
+  genres: [GenreEntity!]
+  id: ID!
+  movieLength: Float!
+  plot: String!
+  rating: Float!
+  release: DateTime!
+  title: String!
+}
+
+type Mutation {
+  createDirector(createDirector: CreateDirectorInput!): DirectorEntity!
+  createGenre(createGenre: CreateGenreInput!): GenreEntity!
+  removeGenre(id: Float!): Float!
+  updateGenre(updateGenre: UpdateGenreInput!): GenreEntity!
+}
+
+type Query {
+  getAllDirectors: [DirectorEntity!]!
+  getAllGenres: [GenreEntity!]!
+  getGenreById(id: Float!): GenreEntity!
+}
+
+input UpdateGenreInput {
+  genreName: String
+  id: ID!
+}
