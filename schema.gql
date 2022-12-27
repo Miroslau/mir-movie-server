@@ -13,6 +13,13 @@ type ActorEntity {
   secondName: String!
 }
 
+input CreateDirectorInput {
+  Birth: DateTime!
+  Nationality: String!
+  firstName: String!
+  secondName: String!
+}
+
 input CreateGenreInput {
   genreName: String!
 }
@@ -56,12 +63,14 @@ type MovieEntity {
 }
 
 type Mutation {
+  createDirector(createDirector: CreateDirectorInput!): DirectorEntity!
   createGenre(createGenre: CreateGenreInput!): GenreEntity!
   removeGenre(id: Float!): Float!
   updateGenre(updateGenre: UpdateGenreInput!): GenreEntity!
 }
 
 type Query {
+  getAllDirectors: [DirectorEntity!]!
   getAllGenres: [GenreEntity!]!
   getGenreById(id: Float!): GenreEntity!
 }

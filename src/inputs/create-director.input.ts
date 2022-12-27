@@ -17,11 +17,12 @@ export class CreateDirectorInput implements UserInterface {
   Nationality: string;
 }
 
+@InputType()
 export class addFilmToDirector extends CreateDirectorInput {
   constructor() {
     super();
   }
 
-  @Field({ nullable: true })
+  @Field(() => [MovieEntity], { nullable: true })
   movies: MovieEntity[];
 }
