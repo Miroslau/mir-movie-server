@@ -1,10 +1,10 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
 
 @InputType()
-export class AddMovieForDirectorInput {
+export class RemoveMovieFromDirectorInput {
   @Field(() => ID)
   directorId: number;
 
-  @Field(() => [ID])
-  moviesId: number[];
+  @Field(() => ID)
+  movieId: number;
 }

@@ -67,7 +67,7 @@ export class ActorService {
     const actor = await this.getActorById(removeMovieFromActorInput.actorId);
 
     actor.movies = actor.movies.filter((movie) => {
-      return movie.id !== removeMovieFromActorInput.movieId;
+      return movie.id !== Number(removeMovieFromActorInput.movieId);
     });
 
     await this.actorRepository.save(actor);

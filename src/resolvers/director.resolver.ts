@@ -3,6 +3,8 @@ import { DirectorService } from '../services/director.service';
 import { DirectorEntity } from '../entities/director.entity';
 import { CreateDirectorInput } from '../inputs/create-director.input';
 import { AddMovieForDirectorInput } from '../inputs/add-movie-for-director.input';
+import { RemoveMovieFromDirectorInput } from '../inputs/remove-movie-from-director.input';
+import { UpdateDirectorInput } from '../inputs/update-director-input';
 
 @Resolver('Director')
 export class DirectorResolver {
@@ -27,11 +29,33 @@ export class DirectorResolver {
 
   @Mutation(() => DirectorEntity)
   async addMovieForDirector(
-    @Args('addMovieForDirectorInput')
+    @Args('addMovieForDirector')
     addMovieForDirectorInput: AddMovieForDirectorInput,
   ): Promise<DirectorEntity> {
     return await this.directorService.addMovieForDirector(
       addMovieForDirectorInput,
     );
+  }
+
+  @Mutation(() => Number)
+  async removeDirector(@Args('id') id: number): Promise<number> {
+    return await this.directorService.removeDirector(id);
+  }
+
+  @Mutation(() => DirectorEntity)
+  async removeMovieFromDirector(
+    @Args('removeMovieFromDirector')
+    removeMovieFromDirectorInput: RemoveMovieFromDirectorInput,
+  ): Promise<DirectorEntity> {
+    return await this.directorService.removeMovieFromDirector(
+      removeMovieFromDirectorInput,
+    );
+  }
+
+  @Mutation(() => DirectorEntity)
+  async updateDirector(
+    @Args('updateDirector') updateDirectorInput: UpdateDirectorInput,
+  ): Promise<DirectorEntity> {
+    return await this.directorService.updateDirector(updateDirectorInput);
   }
 }
