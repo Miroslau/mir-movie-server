@@ -21,6 +21,9 @@ export class GenreService {
       where: {
         id: id,
       },
+      relations: {
+        movies: true,
+      },
     });
   }
 
