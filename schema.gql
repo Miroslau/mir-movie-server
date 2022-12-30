@@ -103,11 +103,14 @@ type Mutation {
   removeActor(id: Float!): Float!
   removeDirector(id: Float!): Float!
   removeGenre(id: Float!): Float!
+  removeGenreFromMovie(removeGenreFromMovie: RemoveGenreFromMovieInput!): MovieEntity!
+  removeMovie(id: Float!): Float!
   removeMovieFromActor(removeMovieFromActor: RemoveMovieFromActorInput!): ActorEntity!
   removeMovieFromDirector(removeMovieFromDirector: RemoveMovieFromDirectorInput!): DirectorEntity!
   updateActor(updateActor: UpdateActorInput!): ActorEntity!
   updateDirector(updateDirector: UpdateDirectorInput!): DirectorEntity!
   updateGenre(updateGenre: UpdateGenreInput!): GenreEntity!
+  updateMovie(updateMovie: UpdateMovieInput!): MovieEntity!
 }
 
 type Query {
@@ -119,6 +122,12 @@ type Query {
   getDirectorById(id: Float!): DirectorEntity!
   getGenreById(id: Float!): GenreEntity!
   getMovieById(id: Float!): MovieEntity!
+  searchMoviesByGenre(searchMoviesByGenre: SearchMoviesByGenreInput!): [MovieEntity!]!
+}
+
+input RemoveGenreFromMovieInput {
+  genreId: ID!
+  movieId: ID!
 }
 
 input RemoveMovieFromActorInput {
@@ -129,6 +138,10 @@ input RemoveMovieFromActorInput {
 input RemoveMovieFromDirectorInput {
   directorId: ID!
   movieId: ID!
+}
+
+input SearchMoviesByGenreInput {
+  genreName: String
 }
 
 input UpdateActorInput {
@@ -150,4 +163,13 @@ input UpdateDirectorInput {
 input UpdateGenreInput {
   genreName: String
   id: ID!
+}
+
+input UpdateMovieInput {
+  id: ID!
+  movieLength: Float
+  plot: String
+  rating: Float
+  release: DateTime
+  title: String
 }
