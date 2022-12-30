@@ -40,7 +40,7 @@ export class MovieService {
   async addGenreForMovie(
     addGenreForMovieInput: AddGenreForMovieInput,
   ): Promise<MovieEntity> {
-    const genres = [];
+    const genres: GenreEntity[] = [];
 
     for (const genreId of addGenreForMovieInput.genresId) {
       const genre = await this.genreRepository.findOne({

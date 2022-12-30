@@ -18,6 +18,11 @@ input AddGenreForMovieInput {
   movieId: ID!
 }
 
+input AddMovieForActorInput {
+  actorId: ID!
+  moviesId: [ID!]!
+}
+
 input AddMovieForDirectorInput {
   directorId: ID!
   movieId: ID!
@@ -89,16 +94,19 @@ type MovieEntity {
 
 type Mutation {
   addGenreForMovie(addGenreForMovie: AddGenreForMovieInput!): MovieEntity!
+  addMovieForActor(addMovieForActorInput: AddMovieForActorInput!): ActorEntity!
   addMovieForDirector(addMovieForDirectorInput: AddMovieForDirectorInput!): DirectorEntity!
   createActor(createActor: CreateActorInput!): ActorEntity!
   createDirector(createDirector: CreateDirectorInput!): DirectorEntity!
   createGenre(createGenre: CreateGenreInput!): GenreEntity!
   createMovie(createMovie: CreateMovieInput!): MovieEntity!
+  removeActor(id: Float!): Float!
   removeGenre(id: Float!): Float!
   updateGenre(updateGenre: UpdateGenreInput!): GenreEntity!
 }
 
 type Query {
+  getActorById(id: Float!): ActorEntity!
   getAllActors: [ActorEntity!]!
   getAllDirectors: [DirectorEntity!]!
   getAllGenres: [GenreEntity!]!
