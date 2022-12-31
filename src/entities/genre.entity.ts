@@ -7,32 +7,37 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { MovieEntity } from './movie.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
-@ObjectType()
 @Entity({ name: 'genres' })
 export class GenreEntity {
-  @Field(() => ID)
+  @ApiProperty({ example: 1, description: 'number', required: true })
   @PrimaryGeneratedColumn({ name: 'ID' })
   id: number;
 
-  @Field()
+  @ApiProperty({
+    example: 'Fantasy',
+    description: 'string',
+    required: true,
+    uniqueItems: true,
+  })
   @Column({ name: 'GENRE_NAME', unique: true })
   genreName: string;
 
-  @Field(() => [MovieEntity], { nullable: true })
-  @ManyToMany(() => MovieEntity, (movie) => movie.genres, {
-    cascade: true,
+  @ApiProperty({
+    example: [MovieEntity],
+    description: 'MovieEntity[]',
+    nullable: true,
   })
-  @JoinTable()
+  @ManyToMany(() => MovieEntity, (movie) => movie.genres)
   movies: MovieEntity[];
 
-  @Field()
+  @ApiProperty({ example: '2022-12-01', description: 'Date' })
   @CreateDateColumn()
   createdAt: Date;
 
-  @Field()
+  @ApiProperty({ example: '2022-12-01', description: 'Date' })
   @UpdateDateColumn()
   UpdateAt: Date;
 }

@@ -1,13 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MovieEntity } from '../entities/movie.entity';
 import { Repository } from 'typeorm';
-import { CreateMovieInput } from '../inputs/create-movie.input';
-import { AddGenreForMovieInput } from '../inputs/add-genre-for-movie.input';
 import { GenreEntity } from '../entities/genre.entity';
-import { SearchMoviesByGenreInput } from '../inputs/search-movies-by-genre.input';
-import { UpdateMovieInput } from '../inputs/update-moive.input';
-import { RemoveGenreFromMovieInput } from '../inputs/remove-genre-from-movie.input';
+import { AddGenresDto } from '../dto/add-genres.dto';
+import { DeleteGenreDto } from '../dto/delete-genre.dto';
+import { UpdateMovieDto } from '../dto/update-movie.dto';
+import { CreateMovieDto } from '../dto/create-movie.dto';
 
 @Injectable()
 export class MovieService {
@@ -19,8 +18,11 @@ export class MovieService {
     private readonly genreRepository: Repository<GenreEntity>,
   ) {}
 
-  async getAllMovies(): Promise<MovieEntity[]> {
-    return await this.movieRepository.find();
+  async getAllMovies(count = 10, offset = 0): Promise<MovieEntity[]> {
+    return await this.movieRepository.find({
+      skip: Number(offset),
+      take: Number(count),
+    });
   }
 
   async getMovieById(id: number): Promise<MovieEntity> {
@@ -36,26 +38,25 @@ export class MovieService {
     });
   }
 
-  async searchMoviesByGenre(
-    searchMoviesByGenreInput: SearchMoviesByGenreInput,
-  ): Promise<MovieEntity[]> {
+  async searchMoviesByGenre(genre: string): Promise<MovieEntity[]> {
     return await this.movieRepository.findBy({
       genres: {
-        genreName: searchMoviesByGenreInput.genreName,
+        genreName: genre,
       },
     });
   }
 
-  async createMovie(createMovieInput: CreateMovieInput): Promise<MovieEntity> {
-    return await this.movieRepository.save({ ...createMovieInput });
+  async createMovie(dto: CreateMovieDto): Promise<MovieEntity> {
+    return await this.movieRepository.save({ ...dto });
   }
 
   async addGenreForMovie(
-    addGenreForMovieInput: AddGenreForMovieInput,
+    movieId: number,
+    dto: AddGenresDto,
   ): Promise<MovieEntity> {
     const genres: GenreEntity[] = [];
 
-    for (const genreId of addGenreForMovieInput.genresId) {
+    for (const genreId of dto.genresId) {
       const genre = await this.genreRepository.findOne({
         where: {
           id: genreId,
@@ -65,7 +66,7 @@ export class MovieService {
       genres.push(genre);
     }
 
-    const movie = await this.getMovieById(addGenreForMovieInput.movieId);
+    const movie = await this.getMovieById(movieId);
 
     movie.genres = genres;
 
@@ -74,13 +75,19 @@ export class MovieService {
     return movie;
   }
 
-  async updateMovie(updateMovieInput: UpdateMovieInput): Promise<MovieEntity> {
-    await this.movieRepository.update(
-      { id: updateMovieInput.id },
-      { ...updateMovieInput },
-    );
+  async removeGenreFromMovie(
+    movieId: number,
+    dto: DeleteGenreDto,
+  ): Promise<MovieEntity> {
+    const movie = await this.getMovieById(movieId);
 
-    return await this.getMovieById(updateMovieInput.id);
+    movie.genres = movie.genres.filter((genre) => {
+      return genre.id !== dto.genreId;
+    });
+
+    await this.movieRepository.save(movie);
+
+    return movie;
   }
 
   async removeMovie(id: number): Promise<number> {
@@ -88,17 +95,8 @@ export class MovieService {
     return id;
   }
 
-  async removeGenreFromMovie(
-    removeGenreFromMovieInput: RemoveGenreFromMovieInput,
-  ): Promise<MovieEntity> {
-    const movie = await this.getMovieById(removeGenreFromMovieInput.movieId);
-
-    movie.genres = movie.genres.filter((genre) => {
-      return genre.id !== Number(removeGenreFromMovieInput.genreId);
-    });
-
-    await this.movieRepository.save(movie);
-
-    return movie;
+  async updateMovie(id: number, dto: UpdateMovieDto): Promise<MovieEntity> {
+    await this.movieRepository.update({ id }, { ...dto });
+    return await this.getMovieById(id);
   }
 }

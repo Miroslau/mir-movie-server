@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DirectorEntity } from '../entities/director.entity';
 import { DirectorService } from '../services/director.service';
-import { DirectorResolver } from '../resolvers/director.resolver';
 import { MovieEntity } from '../entities/movie.entity';
+import { DirectorsController } from '../controllers/directors.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([DirectorEntity, MovieEntity])],
-  providers: [DirectorService, DirectorResolver],
+  controllers: [DirectorsController],
+  providers: [DirectorService],
   exports: [TypeOrmModule],
 })
 export class DirectorModule {}
