@@ -5,48 +5,62 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { MovieEntity } from './movie.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
-@ObjectType()
 @Entity({ name: 'directors' })
 export class DirectorEntity implements UserInterface {
-  @Field(() => ID)
+  @ApiProperty({ example: 1, description: 'number', required: true })
   @PrimaryGeneratedColumn({ name: 'ID' })
   id: number;
 
-  @Field()
+  @ApiProperty({
+    example: 'David',
+    description: 'string',
+    required: true,
+  })
   @Column({ name: 'FIRST_NAME' })
   firstName: string;
 
-  @Field()
+  @ApiProperty({
+    example: 'Yates',
+    description: 'string',
+    required: true,
+  })
   @Column({ name: 'SECOND_NAME' })
   secondName: string;
 
-  @Field()
+  @ApiProperty({ example: '2022-12-01', description: 'Date', required: true })
   @Column({ name: 'BIRTH' })
   Birth: Date;
 
-  @Field()
+  @ApiProperty({
+    example: 'The USA',
+    description: 'string',
+    required: true,
+  })
   @Column({ name: 'NATIONALITY' })
   Nationality: string;
 
-  @Field(() => [MovieEntity], { nullable: true })
+  @ApiProperty({
+    example: [MovieEntity],
+    description: 'MovieEntity[]',
+    nullable: true,
+  })
   @ManyToMany(() => MovieEntity, (movie) => movie.directors, {
     cascade: true,
   })
   @JoinTable()
   movies: MovieEntity[];
 
-  @Field()
+  @ApiProperty({ example: '2022-12-01', description: 'Date' })
   @CreateDateColumn()
   createdAt: Date;
 
-  @Field()
+  @ApiProperty({ example: '2022-12-01', description: 'Date' })
   @UpdateDateColumn()
   UpdateAt: Date;
 }
