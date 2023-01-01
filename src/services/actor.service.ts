@@ -7,6 +7,7 @@ import { AddMoviesDto } from '../dto/add-movies.dto';
 import { DeleteMovieDto } from '../dto/delete-movie.dto';
 import { UpdateActorDto } from '../dto/update-actor.dto';
 import { CreateActorDto } from '../dto/create-actor.dto';
+import { S3Service } from './s3.service';
 
 @Injectable()
 export class ActorService {
@@ -16,6 +17,8 @@ export class ActorService {
 
     @InjectRepository(MovieEntity)
     private readonly movieRepository: Repository<MovieEntity>,
+
+    private readonly _s3Service: S3Service,
   ) {}
 
   async getAllActors(count = 10, offset = 0): Promise<ActorEntity[]> {
@@ -86,11 +89,30 @@ export class ActorService {
   }
 
   async updateActor(id: number, dto: UpdateActorDto): Promise<ActorEntity> {
+    console.log(1);
     await this.actorRepository.update(
       {
         id,
       },
       { ...dto },
+    );
+
+    return await this.getActorById(id);
+  }
+
+  async addImageToActor(
+    id: number,
+    file: Express.Multer.File,
+  ): Promise<ActorEntity> {
+    const key = `${file.fieldname}${Date.now()}`;
+
+    const imageUrl = await this._s3Service.uploadFile(file, key);
+
+    await this.actorRepository.update(
+      { id },
+      {
+        image: imageUrl,
+      },
     );
 
     return await this.getActorById(id);

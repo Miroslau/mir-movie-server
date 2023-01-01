@@ -26,6 +26,14 @@ export class MovieEntity {
   @Column({ name: 'TITLE' })
   title: string;
 
+  @ApiProperty({
+    example: 'http://......',
+    description: 'string',
+    required: true,
+  })
+  @Column({ name: 'POSTER', nullable: true })
+  poster: string;
+
   @ApiProperty({ example: '2022-12-01', description: 'Date', required: true })
   @Column({ name: 'RELEASE' })
   release: Date;

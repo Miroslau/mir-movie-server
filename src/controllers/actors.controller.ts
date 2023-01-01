@@ -1,4 +1,10 @@
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -9,7 +15,9 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseFilters,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ActorService } from '../services/actor.service';
 import { ActorEntity } from '../entities/actor.entity';
@@ -18,6 +26,7 @@ import { AddMoviesDto } from '../dto/add-movies.dto';
 import { DeleteMovieDto } from '../dto/delete-movie.dto';
 import { UpdateActorDto } from '../dto/update-actor.dto';
 import { AllExceptionsFilter } from '../filters/http-exception.filter';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Actor')
 @Controller('/actors')
@@ -51,6 +60,29 @@ export class ActorsController {
   @UseFilters(AllExceptionsFilter)
   async createActor(@Body() dto: CreateActorDto): Promise<ActorEntity> {
     return await this._actorService.createActor(dto);
+  }
+
+  @ApiOperation({ summary: 'Add image to actor' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @Post(':id/upload-file')
+  @HttpCode(200)
+  async addImageToActor(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') id: number,
+  ): Promise<ActorEntity> {
+    return await this._actorService.addImageToActor(id, file);
   }
 
   @ApiOperation({ summary: 'Add movies for an actor' })
