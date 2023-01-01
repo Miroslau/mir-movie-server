@@ -89,7 +89,6 @@ export class ActorService {
   }
 
   async updateActor(id: number, dto: UpdateActorDto): Promise<ActorEntity> {
-    console.log(1);
     await this.actorRepository.update(
       {
         id,
