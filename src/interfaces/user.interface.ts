@@ -6,4 +6,6 @@ export interface UserInterface {
   Nationality: string;
 
   Birth: Date;
+
+  image?: string;
 }

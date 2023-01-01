@@ -1,4 +1,10 @@
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -9,7 +15,9 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseFilters,
+  UseInterceptors,
 } from '@nestjs/common';
 import { DirectorService } from '../services/director.service';
 import { DirectorEntity } from '../entities/director.entity';
@@ -18,6 +26,7 @@ import { AddMoviesDto } from '../dto/add-movies.dto';
 import { DeleteMovieDto } from '../dto/delete-movie.dto';
 import { UpdateDirectorDto } from '../dto/update-director.dto';
 import { AllExceptionsFilter } from '../filters/http-exception.filter';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Director')
 @Controller('/directors')
@@ -53,6 +62,29 @@ export class DirectorsController {
     @Body() dto: CreateDirectorDto,
   ): Promise<DirectorEntity> {
     return await this._directorService.createDirector(dto);
+  }
+
+  @ApiOperation({ summary: 'Add image to director' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @Post(':id/upload-file')
+  @HttpCode(200)
+  async addImageToDirector(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') id: number,
+  ): Promise<DirectorEntity> {
+    return await this._directorService.addImageToDirector(id, file);
   }
 
   @ApiOperation({ summary: 'Add movies for an director' })

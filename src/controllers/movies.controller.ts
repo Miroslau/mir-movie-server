@@ -1,4 +1,10 @@
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -9,7 +15,9 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
   UseFilters,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MovieService } from '../services/movie.service';
 import { MovieEntity } from '../entities/movie.entity';
@@ -18,6 +26,7 @@ import { AddGenresDto } from '../dto/add-genres.dto';
 import { DeleteGenreDto } from '../dto/delete-genre.dto';
 import { UpdateMovieDto } from '../dto/update-movie.dto';
 import { AllExceptionsFilter } from '../filters/http-exception.filter';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Movie')
 @Controller('/movies')
@@ -61,6 +70,47 @@ export class MoviesController {
   @UseFilters(AllExceptionsFilter)
   async createMovie(@Body() dto: CreateMovieDto): Promise<MovieEntity> {
     return await this._movieService.createMovie(dto);
+  }
+
+  @ApiOperation({ summary: 'Add posters to movie' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        posterUrl: {
+          type: 'string',
+          format: 'binary',
+        },
+        horizontalPoster: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Post(':id/upload-posters')
+  @HttpCode(200)
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'posterUrl', maxCount: 1 },
+      { name: 'horizontalPoster', maxCount: 1 },
+    ]),
+  )
+  async addPostersForMovie(
+    @UploadedFiles()
+    files: {
+      posterUrl?: Express.Multer.File[];
+      horizontalPoster?: Express.Multer.File[];
+    },
+    @Param('id') id: number,
+  ) {
+    const { posterUrl, horizontalPoster } = files;
+    return await this._movieService.addPostersForMovie(
+      id,
+      posterUrl[0],
+      horizontalPoster[0],
+    );
   }
 
   @ApiOperation({ summary: 'Add genres for an movie' })

@@ -33,6 +33,14 @@ export class DirectorEntity implements UserInterface {
   @Column({ name: 'SECOND_NAME' })
   secondName: string;
 
+  @ApiProperty({
+    example: 'http://......',
+    description: 'string',
+    nullable: true,
+  })
+  @Column({ name: 'IMAGE', nullable: true })
+  image: string;
+
   @ApiProperty({ example: '2022-12-01', description: 'Date', required: true })
   @Column({ name: 'BIRTH' })
   Birth: Date;

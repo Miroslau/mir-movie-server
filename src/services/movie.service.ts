@@ -7,6 +7,7 @@ import { AddGenresDto } from '../dto/add-genres.dto';
 import { DeleteGenreDto } from '../dto/delete-genre.dto';
 import { UpdateMovieDto } from '../dto/update-movie.dto';
 import { CreateMovieDto } from '../dto/create-movie.dto';
+import { S3Service } from './s3.service';
 
 @Injectable()
 export class MovieService {
@@ -16,6 +17,8 @@ export class MovieService {
 
     @InjectRepository(GenreEntity)
     private readonly genreRepository: Repository<GenreEntity>,
+
+    private readonly _s3Service: S3Service,
   ) {}
 
   async getAllMovies(count = 10, offset = 0): Promise<MovieEntity[]> {
@@ -97,6 +100,34 @@ export class MovieService {
 
   async updateMovie(id: number, dto: UpdateMovieDto): Promise<MovieEntity> {
     await this.movieRepository.update({ id }, { ...dto });
+    return await this.getMovieById(id);
+  }
+
+  async addPostersForMovie(
+    id: number,
+    posterUrl: Express.Multer.File,
+    horizontalPoster: Express.Multer.File,
+  ): Promise<MovieEntity> {
+    const keyForPosterUrl = `${posterUrl.fieldname}${Date.now()}`;
+    const keyForHorizontalPoster = `${horizontalPoster.fieldname}${Date.now()}`;
+
+    const urlForPoster = await this._s3Service.uploadFile(
+      posterUrl,
+      keyForPosterUrl,
+    );
+    const urlForHorizontalPoster = await this._s3Service.uploadFile(
+      horizontalPoster,
+      keyForHorizontalPoster,
+    );
+
+    await this.movieRepository.update(
+      { id },
+      {
+        posterUrl: urlForPoster,
+        horizontalPoster: urlForHorizontalPoster,
+      },
+    );
+
     return await this.getMovieById(id);
   }
 }
