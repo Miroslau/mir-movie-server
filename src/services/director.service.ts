@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DirectorEntity } from '../entities/director.entity';
 import { Repository } from 'typeorm';
@@ -7,6 +7,7 @@ import { CreateDirectorDto } from '../dto/create-director.dto';
 import { AddMoviesDto } from '../dto/add-movies.dto';
 import { DeleteMovieDto } from '../dto/delete-movie.dto';
 import { UpdateDirectorDto } from '../dto/update-director.dto';
+import { S3Service } from './s3.service';
 
 @Injectable()
 export class DirectorService {
@@ -16,6 +17,8 @@ export class DirectorService {
 
     @InjectRepository(MovieEntity)
     private readonly movieRepository: Repository<MovieEntity>,
+
+    private readonly _s3Service: S3Service,
   ) {}
 
   async getAllDirectors(count = 10, offset = 0): Promise<DirectorEntity[]> {
@@ -95,6 +98,24 @@ export class DirectorService {
       },
       {
         ...dto,
+      },
+    );
+
+    return await this.getDirectorById(id);
+  }
+
+  async addImageToDirector(
+    id: number,
+    file: Express.Multer.File,
+  ): Promise<DirectorEntity> {
+    const key = `${file.fieldname}${Date.now()}`;
+
+    const imageUrl = await this._s3Service.uploadFile(file, key);
+
+    await this.directorRepository.update(
+      { id },
+      {
+        image: imageUrl,
       },
     );
 

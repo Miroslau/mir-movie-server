@@ -36,7 +36,7 @@ export class DirectorEntity implements UserInterface {
   @ApiProperty({
     example: 'http://......',
     description: 'string',
-    required: true,
+    nullable: true,
   })
   @Column({ name: 'IMAGE', nullable: true })
   image: string;

@@ -16,6 +16,12 @@ export class S3Service {
     this.region = this._configService.get<string>('S3_REGION') || 'us-east-1';
     this.s3 = new S3Client({
       region: this.region,
+      credentials: {
+        accessKeyId: this._configService.get<string>('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this._configService.get<string>(
+          'AWS_SECRET_ACCESS_KEY',
+        ),
+      },
     });
   }
   async uploadFile(file: Express.Multer.File, key: string): Promise<string> {
