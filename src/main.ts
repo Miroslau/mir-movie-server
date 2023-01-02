@@ -8,7 +8,7 @@ async function bootstrap() {
     const PORT = process.env.PORT || 5000;
     const app = await NestFactory.create(AppModule);
 
-    app.setGlobalPrefix('api');
+    // app.setGlobalPrefix('api');
 
     const config = new DocumentBuilder()
       .setTitle('Mir Movies')
@@ -18,7 +18,7 @@ async function bootstrap() {
 
     const document = SwaggerModule.createDocument(app, config);
 
-    SwaggerModule.setup('/api/docs', app, document);
+    SwaggerModule.setup('api-docs', app, document);
 
     await app.listen(PORT, () => console.log(`server started on PORT ${PORT}`));
   } catch (error) {
