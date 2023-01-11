@@ -18,6 +18,7 @@ import {
   UploadedFile,
   UseFilters,
   UseInterceptors,
+  Request,
 } from '@nestjs/common';
 import { ActorService } from '../services/actor.service';
 import { ActorEntity } from '../entities/actor.entity';
@@ -27,6 +28,7 @@ import { DeleteMovieDto } from '../dto/delete-movie.dto';
 import { UpdateActorDto } from '../dto/update-actor.dto';
 import { AllExceptionsFilter } from '../filters/http-exception.filter';
 import { FileInterceptor } from '@nestjs/platform-express';
+import {Pagination} from "../paginate/pagination";
 
 @ApiTags('Actor')
 @Controller('/actors')
@@ -37,11 +39,11 @@ export class ActorsController {
   @ApiResponse({ type: [CreateActorDto] })
   @Get()
   @UseFilters(AllExceptionsFilter)
-  async getAllActors(
-    @Query('count') count: number,
-    @Query('offset') offset: number,
-  ): Promise<ActorEntity[]> {
-    return await this._actorService.getAllActors(count, offset);
+  async getAllActors(@Request() request): Promise<Pagination<ActorEntity>> {
+    return await this._actorService.getAllActors({
+      limit: request.query.hasOwnProperty('limit') ? request.query.limit : 10,
+      page: request.query.hasOwnProperty('page') ? request.query.page : 0,
+    });
   }
 
   @ApiOperation({ summary: 'Get actor by Id' })

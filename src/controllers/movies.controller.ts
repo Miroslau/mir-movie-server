@@ -18,6 +18,7 @@ import {
   UploadedFiles,
   UseFilters,
   UseInterceptors,
+  Request,
 } from '@nestjs/common';
 import { MovieService } from '../services/movie.service';
 import { MovieEntity } from '../entities/movie.entity';
@@ -27,6 +28,7 @@ import { DeleteGenreDto } from '../dto/delete-genre.dto';
 import { UpdateMovieDto } from '../dto/update-movie.dto';
 import { AllExceptionsFilter } from '../filters/http-exception.filter';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import {Pagination} from "../paginate/pagination";
 
 @ApiTags('Movie')
 @Controller('/movies')
@@ -37,11 +39,11 @@ export class MoviesController {
   @ApiResponse({ type: [CreateMovieDto] })
   @Get()
   @UseFilters(AllExceptionsFilter)
-  async getAllMovies(
-    @Query('count') count: number,
-    @Query('offset') offset: number,
-  ): Promise<MovieEntity[]> {
-    return await this._movieService.getAllMovies(count, offset);
+  async getAllMovies(@Request() request): Promise<Pagination<MovieEntity>> {
+    return await this._movieService.getAllMovies({
+      limit: request.query.hasOwnProperty('limit') ? request.query.limit : 10,
+      page: request.query.hasOwnProperty('page') ? request.query.page : 0,
+    });
   }
 
   @ApiOperation({ summary: 'Search movies by genre name' })

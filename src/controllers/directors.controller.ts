@@ -18,6 +18,7 @@ import {
   UploadedFile,
   UseFilters,
   UseInterceptors,
+  Request,
 } from '@nestjs/common';
 import { DirectorService } from '../services/director.service';
 import { DirectorEntity } from '../entities/director.entity';
@@ -27,6 +28,7 @@ import { DeleteMovieDto } from '../dto/delete-movie.dto';
 import { UpdateDirectorDto } from '../dto/update-director.dto';
 import { AllExceptionsFilter } from '../filters/http-exception.filter';
 import { FileInterceptor } from '@nestjs/platform-express';
+import {Pagination} from "../paginate/pagination";
 
 @ApiTags('Director')
 @Controller('/directors')
@@ -37,11 +39,11 @@ export class DirectorsController {
   @ApiResponse({ type: [CreateDirectorDto] })
   @Get()
   @UseFilters(AllExceptionsFilter)
-  async getAllDirectors(
-    @Query('count') count: number,
-    @Query('offset') offset: number,
-  ): Promise<DirectorEntity[]> {
-    return await this._directorService.getAllDirectors(count, offset);
+  async getAllDirectors(@Request() request): Promise<Pagination<DirectorEntity>> {
+    return await this._directorService.getAllDirectors({
+      limit: request.query.hasOwnProperty('limit') ? request.query.limit : 10,
+      page: request.query.hasOwnProperty('page') ? request.query.page : 0,
+    });
   }
 
   @ApiOperation({ summary: 'Get director by Id' })

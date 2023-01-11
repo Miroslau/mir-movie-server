@@ -8,6 +8,7 @@ import { DeleteGenreDto } from '../dto/delete-genre.dto';
 import { UpdateMovieDto } from '../dto/update-movie.dto';
 import { CreateMovieDto } from '../dto/create-movie.dto';
 import { S3Service } from './s3.service';
+import {Pagination} from "../paginate/pagination";
 
 @Injectable()
 export class MovieService {
@@ -21,10 +22,17 @@ export class MovieService {
     private readonly _s3Service: S3Service,
   ) {}
 
-  async getAllMovies(count = 10, offset = 0): Promise<MovieEntity[]> {
-    return await this.movieRepository.find({
-      skip: Number(offset),
-      take: Number(count),
+  async getAllMovies(
+      options: PaginationOptionInterface
+  ): Promise<Pagination<MovieEntity>>{
+    const [results, total] = await this.movieRepository.findAndCount({
+      take: options.limit,
+      skip: options.page,
+    });
+
+    return new Pagination<MovieEntity>({
+      results,
+      total
     });
   }
 
