@@ -8,6 +8,7 @@ import { AddMoviesDto } from '../dto/add-movies.dto';
 import { DeleteMovieDto } from '../dto/delete-movie.dto';
 import { UpdateDirectorDto } from '../dto/update-director.dto';
 import { S3Service } from './s3.service';
+import {Pagination} from "../paginate/pagination";
 
 @Injectable()
 export class DirectorService {
@@ -21,11 +22,18 @@ export class DirectorService {
     private readonly _s3Service: S3Service,
   ) {}
 
-  async getAllDirectors(count = 10, offset = 0): Promise<DirectorEntity[]> {
-    return await this.directorRepository.find({
-      skip: Number(offset),
-      take: Number(count),
-    });
+  async getAllDirectors(
+      options: PaginationOptionInterface
+  ): Promise<Pagination<DirectorEntity>> {
+    const [results, total] = await this.directorRepository.findAndCount({
+      take: options.limit,
+      skip: options.page,
+    })
+
+    return new Pagination<DirectorEntity>({
+      results,
+      total
+    })
   }
 
   async getDirectorById(id: number): Promise<DirectorEntity> {
